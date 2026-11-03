@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "id": "segment-fan50s",
+  "operation": "segment_fan_preview",
+  "input": "fan50s.glb",
+  "views": [
+    "front",
+    "side",
+    "three_quarters"
+  ],
+  "image_size": 720
+}

@@ -25,6 +25,17 @@ class ProtocolTest(unittest.TestCase):
         for example in (root/'examples').glob('*.json'):
             data=json.loads(example.read_text(encoding='utf-8'))
             self.assertEqual(data['schema'],1)
-            self.assertIn(data['operation'], ('inspect_glb','preview_glb','normalize_glb','repository_script'))
+            self.assertIn(data['operation'], ('inspect_glb','preview_glb','normalize_glb','repository_script','segment_fan_preview'))
+
+    def test_fan_candidate_mask_is_non_destructive_region(self):
+        from dispatch import fan_candidate_region, fan_candidate_face
+        class P:
+            def __init__(self, x, y, z): self.x, self.y, self.z = x, y, z
+        region = fan_candidate_region(P(-0.35, -0.36, -0.49), P(0.34, 0.36, 0.50))
+        self.assertTrue(fan_candidate_face(P(0, -0.15, 0.13), region))
+        self.assertFalse(fan_candidate_face(P(0, 0.25, 0.13), region))
+        self.assertFalse(fan_candidate_face(P(0.32, -0.15, 0.13), region))
+        self.assertFalse(fan_candidate_face(P(0, -0.15, -0.30), region))
+
 
 if __name__ == '__main__': unittest.main()

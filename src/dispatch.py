@@ -192,6 +192,87 @@ def make_preview(bpy, meshes, output_dir, views, resolution):
     return outputs, engine_used
 
 
+
+def fan_candidate_region(bounds_min, bounds_max):
+    """Approximate blade envelope only: non-destructive diagnostic, NOT a part extraction."""
+    mn, mx = bounds_min, bounds_max
+    width, height, depth = mx.x - mn.x, mx.z - mn.z, mx.y - mn.y
+    if min(width, height, depth) <= 0:
+        raise ValueError('Dimensions fan non valides')
+    return {
+        'axis': 'Y',
+        'center_x': (mn.x + mx.x) / 2,
+        'center_z': mn.z + 0.635 * height,
+        'radius_m': 0.365 * width,
+        'min_y': mn.y + 0.10 * depth,
+        'max_y': mn.y + 0.44 * depth,
+    }
+
+
+def fan_candidate_face(center, region):
+    """Pure geometry mask. It can include cage bars: preview only."""
+    r2 = ((center.x - region['center_x']) ** 2 +
+          (center.z - region['center_z']) ** 2)
+    return (r2 <= region['radius_m'] ** 2 and
+            region['min_y'] <= center.y <= region['max_y'])
+
+
+def make_fan_candidate_preview(bpy, meshes):
+    """Color a copy of the triangles; source geometry, UVs and materials stay unchanged."""
+    from mathutils import Vector
+    mn, mx = bounds_world(meshes)
+    region = fan_candidate_region(mn, mx)
+    mats = []
+    for name, rgba in (
+        ('QA_Fan_Unselected', (0.11, 0.17, 0.21, 1)),
+        ('QA_Fan_Rotor_Candidate', (1.0, 0.12, 0.03, 1)),
+    ):
+        material = bpy.data.materials.new(name)
+        material.diffuse_color = rgba
+        material.use_nodes = True
+        nodes = material.node_tree.nodes
+        nodes.clear()
+        output = nodes.new('ShaderNodeOutputMaterial')
+        emission = nodes.new('ShaderNodeEmission')
+        emission.inputs['Color'].default_value = rgba
+        emission.inputs['Strength'].default_value = 1.0
+        material.node_tree.links.new(emission.outputs['Emission'], output.inputs['Surface'])
+        mats.append(material)
+    total = 0
+    candidate = 0
+    for obj in meshes:
+        copied = obj.data.copy()
+        copied.name = 'QA_Colored_' + obj.data.name
+        copied.materials.clear()
+        for mat in mats:
+            copied.materials.append(mat)
+        world = obj.matrix_world.copy()
+        coords = [world @ v.co for v in obj.data.vertices]
+        for face in copied.polygons:
+            midpoint = sum((coords[idx] for idx in face.vertices), Vector()) / len(face.vertices)
+            matched = fan_candidate_face(midpoint, region)
+            face.material_index = 1 if matched else 0
+            candidate += int(matched)
+            total += 1
+        qa = bpy.data.objects.new('QA_Fan_Segmentation_' + obj.name, copied)
+        bpy.context.scene.collection.objects.link(qa)
+        qa.matrix_world = obj.matrix_world.copy()
+        obj.hide_render = True
+        obj.hide_set(True)
+    if candidate == 0:
+        raise ValueError('Region candidate vide; impossible de produire un apercu utile')
+    return {
+        'candidate_faces': candidate,
+        'total_faces': total,
+        'candidate_fraction': round(candidate / total, 5),
+        'region_blender_xyz_m': {k: round(v, 6) if isinstance(v, float) else v for k, v in region.items()},
+        'preview_only': True,
+        'rotor_extracted': False,
+        'glb_exported': False,
+        'warning': 'Le rouge peut comprendre des fragments de grille et moteur; aucune piece n a ete decoupee.'
+    }
+
+
 def run_job(job_path, output_dir, root, local_settings):
     import bpy
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -202,7 +283,7 @@ def run_job(job_path, output_dir, root, local_settings):
     if job.get('id') != job_path.stem:
         raise ValueError('id JSON != nom du fichier')
     op = job.get('operation')
-    if op not in ('inspect_glb','preview_glb','normalize_glb','repository_script'):
+    if op not in ('inspect_glb','preview_glb','normalize_glb','repository_script','segment_fan_preview'):
         raise ValueError('operation interdite: %s' % op)
     model_path = resolve_safe(root / 'input', job.get('input'), '.glb')
     print('IMPORT', model_path, flush=True)
@@ -225,6 +306,9 @@ def run_job(job_path, output_dir, root, local_settings):
         'mesh_details': mesh_metadata(meshes),
         'warning':'Connectivity islands do not identify rotor or blades semantically.'
     }
+    if op == 'segment_fan_preview':
+        print('FAN SEGMENTATION PREVIEW (no geometry changes)', flush=True)
+        report['fan_segmentation'] = make_fan_candidate_preview(bpy, meshes)
     if op == 'normalize_glb':
         desired = job.get('target_longest_m')
         if not isinstance(desired,(int,float)) or not (0.05 <= desired <= 50):
