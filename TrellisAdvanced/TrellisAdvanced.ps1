@@ -268,6 +268,41 @@ $timer.Add_Tick({
         }
     }
 })
+# Discover the actual CLI flags; v0.8.1 does not have --faces or --normal-map.
+# Do not pretend a checkbox works if its CLI option is unavailable.
+function Read-CliHelp([string]$exe) {
+    try {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $exe
+        $psi.Arguments = '--help'
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $probe = [System.Diagnostics.Process]::Start($psi)
+        $helpText = $probe.StandardOutput.ReadToEnd() + $probe.StandardError.ReadToEnd()
+        [void]$probe.WaitForExit(15000)
+        if (-not $probe.HasExited) { $probe.Kill() }
+        return $helpText
+    } catch { return '' }
+}
+$helpText = Read-CliHelp $cli
+$required = @('--res','--seed','--steps','--max-tokens','--atlas','--tex-res',
+              '--webp','--bg-removal','--dump-bg','--require-gpu','--verbose')
+$missing = @($required | Where-Object { -not $helpText.Contains($_) })
+if ($missing.Count -gt 0) {
+    $generate.Enabled = $false
+    $status.Text = 'CLI incompatible / help introuvable : ' + ($missing -join ', ')
+    $status.ForeColor = [System.Drawing.Color]::DarkRed
+}
+if (-not $helpText.Contains('--faces')) {
+    $faces.Checked = $false; $faces.Enabled = $false
+    $faces.Text = '600 000 faces (runtime plus recent requis)'
+}
+if (-not $helpText.Contains('--normal-map')) {
+    $normal.Checked = $false; $normal.Enabled = $false
+    $normal.Text = 'Normal map (runtime plus recent requis)'
+}
 $timer.Start()
 $form.Add_FormClosing({
     param($sender,$e)
