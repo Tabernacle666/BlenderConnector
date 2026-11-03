@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "id": "inspect-fan50s",
+  "status": "ok",
+  "operation": "inspect_glb",
+  "blender_version": "4.5.15 LTS",
+  "input": "fan50s.glb",
+  "mesh_count": 1,
+  "materials_count": 1,
+  "dimensions_m_assuming_gltf_units": [
+    0.690162,
+    0.72073,
+    0.991488
+  ],
+  "mesh_details": [
+    {
+      "name": "Mesh_0",
+      "vertices": 214614,
+      "faces": 284550,
+      "triangles": 284550,
+      "loose_islands": 7499,
+      "largest_islands_vertices": [
+        2274,
+        2179,
+        2082,
+        1633,
+        1337,
+        1237,
+        1215,
+        1003,
+        984,
+        964
+      ],
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        {
+          "name": "Material_0",
+          "textures": [
+            {
+              "name": "Image_0",
+              "resolution": [
+                2048,
+                2048
+              ],
+              "packed": true
+            },
+            {
+              "name": "Image_1",
+              "resolution": [
+                2048,
+                2048
+              ],
+              "packed": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warning": "Connectivity islands do not identify rotor or blades semantically.",
+  "project_blend": "D:\\GITLINK\\BlenderConnector\\outputs\\inspect-fan50s\\inspect-fan50s.blend",
+  "images_jpg": [
+    "view_front.jpg",
+    "view_side.jpg",
+    "view_three_quarters.jpg"
+  ],
+  "render_engine": "BLENDER_EEVEE_NEXT"
+}
