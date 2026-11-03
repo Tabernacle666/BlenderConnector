@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "id": "segment-fan50s-v1",
+  "status": "ok",
+  "operation": "segment_fan_preview",
+  "blender_version": "4.5.15 LTS",
+  "input": "fan50s.glb",
+  "mesh_count": 1,
+  "materials_count": 1,
+  "dimensions_m_assuming_gltf_units": [
+    0.690162,
+    0.72073,
+    0.991488
+  ],
+  "mesh_details": [
+    {
+      "name": "Mesh_0",
+      "vertices": 214614,
+      "faces": 284550,
+      "triangles": 284550,
+      "loose_islands": 7499,
+      "largest_islands_vertices": [
+        2274,
+        2179,
+        2082,
+        1633,
+        1337,
+        1237,
+        1215,
+        1003,
+        984,
+        964
+      ],
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        {
+          "name": "Material_0",
+          "textures": [
+            {
+              "name": "Image_0",
+              "resolution": [
+                2048,
+                2048
+              ],
+              "packed": true
+            },
+            {
+              "name": "Image_1",
+              "resolution": [
+                2048,
+                2048
+              ],
+              "packed": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warning": "Connectivity islands do not identify rotor or blades semantically.",
+  "fan_segmentation": {
+    "candidate_faces": 57091,
+    "total_faces": 284550,
+    "candidate_fraction": 0.20064,
+    "region_blender_xyz_m": {
+      "axis": "Y",
+      "center_x": -0.008447,
+      "center_z": 0.136758,
+      "radius_m": 0.251909,
+      "min_y": -0.287566,
+      "max_y": -0.042517
+    },
+    "preview_only": true,
+    "rotor_extracted": false,
+    "glb_exported": false,
+    "warning": "Le rouge peut comprendre des fragments de grille et moteur; aucune piece n a ete decoupee."
+  },
+  "project_blend": "D:\\GITLINK\\BlenderConnector\\outputs\\segment-fan50s-v1\\segment-fan50s-v1.blend",
+  "images_jpg": [
+    "view_front.jpg",
+    "view_side.jpg",
+    "view_three_quarters.jpg"
+  ],
+  "render_engine": "BLENDER_EEVEE_NEXT"
+}
