@@ -1,0 +1,15 @@
+# All large or machine-local data stays on D:, never in GitHub
+/vendor/
+/local/
+/input/
+/outputs/
+/__pycache__/
+*.pyc
+*.blend1
+*.blend2
+*.tmp
+*.part
+*.lock
+.DS_Store
+Thumbs.db
+# feedback is intentionally tracked; keep small JPG and JSON only

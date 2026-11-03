@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "id": "inspect-fan50s",
+  "operation": "inspect_glb",
+  "input": "fan50s.glb",
+  "views": ["front", "side", "three_quarters"],
+  "image_size": 720
+}

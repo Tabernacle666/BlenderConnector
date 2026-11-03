@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "id": "normalize-table-001",
+  "operation": "normalize_glb",
+  "input": "table.glb",
+  "target_longest_m": 1.5,
+  "views": ["three_quarters"],
+  "image_size": 720
+}

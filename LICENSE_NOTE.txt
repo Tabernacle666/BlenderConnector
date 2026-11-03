@@ -1,0 +1,3 @@
+Blender is not bundled. Install.bat downloads official Blender GPL software.
+https://www.blender.org/about/license/
+This connector's original code is offered under the MIT License (see LICENSE).

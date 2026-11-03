@@ -1,0 +1,32 @@
+BlenderConnector 0.1 -- GitHub + Blender portable (Windows 10 x64)
+
+1. Extract this ZIP at D:\GITLINK\BlenderConnector (not in a second nested folder).
+2. Run Install.bat. Blender 4.5.15 LTS is downloaded from blender.org,
+   checked against its official SHA256, and extracted into vendor\blender\.
+3. Run Run-Blender.bat to open the GUI (auto-installs if absent).
+4. For the first end-to-end test, leave input\fan50s.glb in place and run
+   Test-Fan.bat. It saves a .blend file under outputs\inspect-fan50s,
+   writes the JSON technical report to feedback\inspect-fan50s and attempts
+   three JPG renders. Open-Latest.bat opens the newest .blend in the GUI.
+   No automatic mesh splitting is performed.
+5. Create your GitHub repository, put the directory under Git and push main.
+   vendor/, input/, outputs/, local/ are ignored (including Blender itself).
+6. Run Watch.bat. It pulls main (when a clean fast-forward is possible),
+   processes unseen jobs/*.json, and commits/pushes feedback JSON/JPG.
+   To stop, Ctrl+C in its terminal. Run-Once.bat processes pending tasks once.
+
+Tasks: use examples/*.json as patterns and commit new jobs/<ID>.json to main.
+Built-ins: inspect_glb, preview_glb, normalize_glb.
+Full bpy scripts: repository_script, disabled by default. To enable after you
+have secured the repo, set "allow_repository_scripts": true in the ignored
+local/settings.json. Treat this as remote code execution on your PC: only
+trusted collaborators should have write permission to main.
+
+No GitHub credentials are stored in this package. Git uses your existing
+Windows credential configuration. Large GLB/.blend files stay local under D:.
+Only status JSON and JPG previews are sent back to GitHub. If git push fails,
+feedback remains on disk and can be pushed later.
+
+Important: This is an independent GitHub worker, NOT yet an Edge 1.8.8 plugin.
+The relay protocol can be integrated after verifying its exact interface.
+No claim that fan blades have been separated; the first job is diagnostics.

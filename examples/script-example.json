@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "id": "custom-task-001",
+  "operation": "repository_script",
+  "input": "fan50s.glb",
+  "script": "example_change_object.py",
+  "views": ["three_quarters"],
+  "image_size": 720
+}
